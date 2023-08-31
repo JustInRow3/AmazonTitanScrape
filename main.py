@@ -15,15 +15,4 @@ wd = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=
 time.sleep(5)
 wd.get('https://www.amazon.com/')
 time.sleep(10)
-
-"""from amazoncaptcha import AmazonCaptcha
-captcha = AmazonCaptcha.fromdriver(wd)
-solution = 'Not solved'
-count = 0"""
-"""if solution != 'Not solved' or count != 10:
-    solution = captcha.solve(keep_logs=True)
-    print(solution)
-    count += 1
-#captcha_image = wd.find_element(By.XPATH, 
-'/html/body/div/div[1]/div[3]/div/div/form/div[1]/div/div/div[1]/img').get_attribute('src')
-#print(captcha_image)"""
+wd.close()
