@@ -18,10 +18,10 @@ wd = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=
 wd.maximize_window()
 wd.get('https://www.amazon.com/') # open amazon
 print('Open tab')
-
+time.sleep(2)
 print('Maximize tab')
-wait = WebDriverWait(wd, 10) # setup wait
 original_window = wd.current_window_handle # store the ID of the original window
+wait = WebDriverWait(wd, 50) # setup wait
 
 # Switch to other tab
 for tab in wd.window_handles:
@@ -31,41 +31,39 @@ for tab in wd.window_handles:
         break
 
 # Input username and pw then click login
-# id="username"
-# id = "password"
-wd.find_element(By.ID, 'username').send_keys('karfafton@gmail.com')
-wd.find_element(By.ID, 'password').send_keys('@Dummy123')
-time.sleep(2)
+wait.until(EC.presence_of_element_located((By.ID, 'username'))).send_keys('karfafton@gmail.com')
+wait.until(EC.presence_of_element_located((By.ID, 'password'))).send_keys('@Dummy123')
 wd.find_element(By.CLASS_NAME, 'login').click()
+time.sleep(2)
 wd.close() # close tab
-print('Closed extension tab.')
+print('Delay 2 secs before close extension tab.')
 
 # Switch to main tab
 wd.switch_to.window(original_window)
 wd.refresh()
 print('Refresh page')
-time.sleep(5)
 
 # Input keywords
 keyword = 'wool dryer balls'
-wd.find_element(By.ID, 'twotabsearchtextbox').send_keys(keyword)
+wait.until(EC.presence_of_element_located((By.ID, 'twotabsearchtextbox'))).send_keys(keyword)
 print('Enter Keyword')
-wd.find_element(By.ID, 'nav-search-submit-button').click()
+wait.until(EC.presence_of_element_located((By.ID, 'nav-search-submit-button'))).click()
 print('Click submit')
-time.sleep(2)
 
-#select table
-#print(table.text.split('\n'))
+#select table then wait until extension is done
+wait.until(EC.presence_of_element_located((By.ID, 'amazon-analysis-eefljgmhgaidffapnppcmmafobefjece')))
 for i in range(100):
+    time.sleep(3)
     table = wd.find_element(By.ID, 'amazon-analysis-eefljgmhgaidffapnppcmmafobefjece')
-    print(i)
+    print('Loop: ' + str(i))
     if 'Loading...' in table.text.split('\n'):
-        time.sleep(3)
+        if i == 30:
+            wd.refresh()
+            time.sleep(5)
     else:
-        print(table.text)
+        print(table.text.split('\n'))
+        excel = table.text.split('\n')
         break
-
-time.sleep(1)
 
 wd.close()
 wd.quit()
