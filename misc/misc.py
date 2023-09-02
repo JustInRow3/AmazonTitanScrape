@@ -1,10 +1,5 @@
-filename = '9_2_2023.xlsx'
 import pandas as pd
 import os
-
-
-"""rel_path = "../For_Run/" + filename
-abs_file_path = os.path.join(script_dir, rel_path)"""
 
 def file_(file):
     script_dir = os.path.dirname(__file__)  # <-- absolute dir the script is in

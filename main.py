@@ -6,6 +6,11 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 from selenium.webdriver.chrome.options import Options
+import sys
+import pandas as pd
+sys.path.append("..")
+from misc import misc
+
 def if_number_(string):
     int_list = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '.']
     return all([(x in int_list) for x in string])
@@ -68,6 +73,12 @@ wd.switch_to.window(original_window)
 wd.refresh()
 print('Refresh page')
 time.sleep(2)
+for_write = pd.DataFrame(columns=['Keyword', 'Total Results', 'On First Page', 'Ind. Published', 'Average_BSR',
+                                  'Low_BSR', 'High_BSR', 'Average_Reviews', 'Low_Reviews', 'High_Reviews',
+                                  'Average_Price', 'Low_Price', 'High_Price', 'Demand'])
+col = ['Keyword', 'Total Results', 'On First Page', 'Ind. Published', 'Average_BSR',
+                                  'Low_BSR', 'High_BSR', 'Average_Reviews', 'Low_Reviews', 'High_Reviews',
+                                  'Average_Price', 'Low_Price', 'High_Price', 'Demand']
 
 # Input keywords
 keyword = 'wool dryer balls'
@@ -89,9 +100,15 @@ for i in range(100):
             time.sleep(5)
             wait.until(EC.presence_of_element_located((By.ID, 'amazon-analysis-eefljgmhgaidffapnppcmmafobefjece')))
     else:
-        print(table.text.split('\n'))
+        #print(table.text.split('\n'))
         excel = table.text.split('\n')
-        print([element for element in excel if (if_number_(element))])
+        data = [element for element in excel if (if_number_(element))]
+        data.insert(0, keyword)
+        print(data)
+        datapd = pd.DataFrame(data, columns=col)
+        print(data)
+        for_write = for_write.append(data)
+        print(for_write)
         break
 
 
