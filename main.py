@@ -18,8 +18,28 @@ wd = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=
 wd.maximize_window()
 wd.get('https://www.amazon.com/') # open amazon
 print('Open tab')
-time.sleep(2)
 print('Maximize tab')
+
+print(wd.title)
+
+#Check for captcha 3 times
+for i in range(3):
+    if wd.title == 'Amazon.com. Spend less. Smile more.':
+        print('No captcha encountered.')
+        break
+    else:
+        time.sleep(1)
+        wd.quit()
+        wd = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        time.sleep(3)
+        print('Reopen another window!')
+        wd.get('https://www.amazon.com/')  # open amazon
+        wd.maximize_window()
+        wd.refresh()
+        time.sleep(3)
+    print('Captcha encountered 3 times! Exited script, please rerun!')
+    quit()
+
 original_window = wd.current_window_handle # store the ID of the original window
 wait = WebDriverWait(wd, 50) # setup wait
 
@@ -42,6 +62,7 @@ print('Delay 2 secs before close extension tab.')
 wd.switch_to.window(original_window)
 wd.refresh()
 print('Refresh page')
+time.sleep(2)
 
 # Input keywords
 keyword = 'wool dryer balls'
@@ -57,9 +78,10 @@ for i in range(100):
     table = wd.find_element(By.ID, 'amazon-analysis-eefljgmhgaidffapnppcmmafobefjece')
     print('Loop: ' + str(i))
     if 'Loading...' in table.text.split('\n'):
-        if i == 30:
+        if i == 30: # refresh page if took too much time for results
             wd.refresh()
             time.sleep(5)
+            wait.until(EC.presence_of_element_located((By.ID, 'amazon-analysis-eefljgmhgaidffapnppcmmafobefjece')))
     else:
         print(table.text.split('\n'))
         excel = table.text.split('\n')
