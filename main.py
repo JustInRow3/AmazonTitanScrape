@@ -11,6 +11,12 @@ import pandas as pd
 sys.path.append("..")
 from misc import misc
 
+#Constant filepath of input xlsx file
+filetorun = '9_2_2023'
+filetorun_excel = filetorun + '.xlsx'
+write_excel_path = misc.write_excel_path(filetorun)
+print(write_excel_path)
+
 def if_number_(string):
     int_list = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '.']
     return all([(x in int_list) for x in string])
@@ -19,9 +25,12 @@ options = Options()
 options.page_load_strategy = 'eager' # Webdriver waits until DOMContentLoaded event fire is returned.
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
 options.add_extension('extension_8_3_0_0.crx')
+service = Service(executable_path=r'C:\Users\jjie\.wdm\drivers\chromedriver\win64\116.0.5845.141\chromedriver-win32\chromedriver.exe')
 
 # Open browser window
-wd = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+wd = webdriver.Chrome(service=service, options=options)
+wd.implicitly_wait(10)
+
 # bypass captcha by maximizing window
 wd.maximize_window()
 wd.get('https://www.amazon.com/') # open amazon
@@ -43,6 +52,7 @@ for i in range(4):
     else:
         wd.quit()
         wd = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        wd.implicitly_wait(10)
         time.sleep(3)
         print('Reopen another window!')
         wd.get('https://www.amazon.com/')  # open amazon
@@ -73,12 +83,12 @@ wd.switch_to.window(original_window)
 wd.refresh()
 print('Refresh page')
 time.sleep(2)
-for_write = pd.DataFrame(columns=['Keyword', 'Total Results', 'On First Page', 'Ind. Published', 'Average_BSR',
+"""for_write = pd.DataFrame(columns=['Keyword', 'Total Results', 'On First Page', 'Ind. Published', 'Average_BSR',
                                   'Low_BSR', 'High_BSR', 'Average_Reviews', 'Low_Reviews', 'High_Reviews',
                                   'Average_Price', 'Low_Price', 'High_Price', 'Demand'])
 col = ['Keyword', 'Total Results', 'On First Page', 'Ind. Published', 'Average_BSR',
                                   'Low_BSR', 'High_BSR', 'Average_Reviews', 'Low_Reviews', 'High_Reviews',
-                                  'Average_Price', 'Low_Price', 'High_Price', 'Demand']
+                                  'Average_Price', 'Low_Price', 'High_Price', 'Demand']"""
 
 # Input keywords
 keyword = 'wool dryer balls'
@@ -104,11 +114,10 @@ for i in range(100):
         excel = table.text.split('\n')
         data = [element for element in excel if (if_number_(element))]
         data.insert(0, keyword)
-        print(data)
-        datapd = pd.DataFrame(data, columns=col)
-        print(data)
-        for_write = for_write.append(data)
-        print(for_write)
+        #Transpose first before append
+        for_transpose = pd.DataFrame(data, dtype=str).transpose()
+        #write to excel file
+        for_transpose.to_excel(write_excel_path)
         break
 
 
