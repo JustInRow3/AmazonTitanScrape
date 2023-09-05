@@ -2,7 +2,7 @@ import pandas as pd
 import time
 import os
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+
 
 def file_(file):
     script_dir = os.path.dirname(__file__)  # <-- absolute dir the script is in
@@ -39,11 +39,14 @@ def if_number_(string):
 #print(if_number('0.0'))
 
 
-def iterate_keyword(file, wait, wd, writer):
+def iterate_keyword(file, wait, writer, wd):
     from selenium.webdriver.common.by import By
+    for_save = pd.DataFrame()
+    wd.implicitly_wait(30)
     for keyword in read_xlsx(file):
         # Input keywords
         #keyword = 'wool dryer balls'
+        excel_out = pd.ExcelWriter(writer)
         wait.until(EC.presence_of_element_located((By.ID, 'twotabsearchtextbox'))).clear()
         print('Clear input field.')
         wait.until(EC.presence_of_element_located((By.ID, 'twotabsearchtextbox'))).send_keys(keyword)
@@ -54,25 +57,34 @@ def iterate_keyword(file, wait, wd, writer):
         # select table then wait until extension is done
         wait.until(EC.presence_of_element_located((By.ID, 'amazon-analysis-eefljgmhgaidffapnppcmmafobefjece')))
 
-        for i in range(100):
+        for i in range(30):
             time.sleep(3)
             table = wd.find_element(By.ID, 'amazon-analysis-eefljgmhgaidffapnppcmmafobefjece')
             print('Loop: ' + str(i))
-            if 'Loading...' in table.text.split('\n'):
-                if i == 30:  # refresh page if took too much time for results
-                    wd.refresh()
-                    time.sleep(5)
-                    wait.until(
-                        EC.presence_of_element_located((By.ID, 'amazon-analysis-eefljgmhgaidffapnppcmmafobefjece')))
-            else:
-                # print(table.text.split('\n'))
-                excel = table.text.split('\n')
-                data = [element for element in excel if (if_number_(element))]
-                data.insert(0, keyword)
-                # Transpose first before append
-                for_transpose = pd.DataFrame(data, dtype=str).transpose()
-                # write to excel file
-                startrow = writer.sheets['Niche'].max_row
-                for_transpose.to_excel(writer, Header=False, startrow=startrow, sheet_name='Niche')
-                print('Write to excel.')
-                break
+            try:
+                if 'Loading...' in table.text.split('\n'):
+                    if i == 10 or i == 20:  # refresh page if took too much time for results
+                        #wd.refresh()
+                        wait.until(EC.presence_of_element_located((By.ID, 'nav-search-submit-button'))).click()
+                        time.sleep(3)
+                        wait.until(
+                            EC.presence_of_element_located((By.ID, 'amazon-analysis-eefljgmhgaidffapnppcmmafobefjece')))
+                        print('Click submit')
+                else:
+                    # print(table.text.split('\n'))
+                    time.sleep(3)
+                    excel = table.text.split('\n')
+                    data = [element for element in excel if (if_number_(element))]
+                    data.insert(0, keyword)
+                    # Transpose first before append
+                    for_transpose = pd.DataFrame(data, dtype=str).transpose()
+                    for_save = pd.concat([for_save, for_transpose], ignore_index=True)
+                    print(for_save)
+                    print('Write to dataframe.')
+                    break
+            except:
+                print('Timeout encountered!')
+                pass
+    #write to excel file
+    for_save.to_excel(excel_out)
+    excel_out.close()

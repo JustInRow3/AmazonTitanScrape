@@ -103,8 +103,9 @@ wait.until(EC.presence_of_element_located((By.ID, 'amazon-analysis-eefljgmhgaidf
 for i in range(100):
     time.sleep(3)
     table = wd.find_element(By.ID, 'amazon-analysis-eefljgmhgaidffapnppcmmafobefjece')
+    table_details = table.text
     print('Loop: ' + str(i))
-    if 'Loading...' in table.text.split('\n'):
+    if 'Loading...' in table_details.split('\n'):
         if i == 30: # refresh page if took too much time for results
             wd.refresh()
             time.sleep(5)

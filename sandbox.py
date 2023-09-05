@@ -29,6 +29,8 @@ for_write = pd.concat([for_transpose2, for_transpose], ignore_index=True)
 print(misc.iterate_keyword(file))"""
 import openpyxl
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
@@ -38,7 +40,6 @@ from selenium.webdriver.chrome.options import Options
 import sys
 sys.path.append("..")
 from misc import misc
-import pandas as pd
 
 #Constant filepath of input xlsx file
 filetorun = '9_2_2023'
@@ -49,7 +50,6 @@ print(write_excel_path)
 # Create new excel file every run
 wb = openpyxl.Workbook()
 ws = wb.active
-wb.create_sheet('Niche')
 wb.save(write_excel_path)
 wb.close()
 time.sleep(2)
@@ -64,10 +64,6 @@ service = Service(executable_path=r'C:\Users\jjie\.wdm\drivers\chromedriver\win6
 wd = webdriver.Chrome(service=service, options=options)
 wd.implicitly_wait(10)
 
-wb.close()
-
-writer = pd.ExcelWriter(write_excel_path, engine=openpyxl)
-startrow = writer.sheets['Niche'].max_row
 # bypass captcha by maximizing window
 wd.maximize_window()
 time.sleep(3)
@@ -128,5 +124,4 @@ wd.refresh()
 print('Refresh page')
 time.sleep(2)
 
-
-misc.iterate_keyword(file=filetorun_excel, writer=writer, wait=wait, wd=wd)
+misc.iterate_keyword(file=filetorun_excel, writer=write_excel_path, wait=wait, wd=wd)
