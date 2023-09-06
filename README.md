@@ -8,7 +8,8 @@ For the project to be done in selenium here are the steps:
 2. Add extension
 2. Login on extension 
 2. Visit Amazon.com
-2. Check for captcha, maximize window then refresh page if encountered. 
+2. Check for captcha, maximize window then refresh page if encountered.
+3. Close current tab, then repeat this for 6 times.
 2. Open the keyword excel file put into an array.
 2. Read the first keyword, then plug in to the amazon search bar.
 2. Hit enter, wait until the extension table of data is done loading.
