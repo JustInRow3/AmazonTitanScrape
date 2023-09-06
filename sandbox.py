@@ -117,9 +117,9 @@ for tab in wd.window_handles:
         break
 
 # Input username and pw then click login
-wait.until(EC.presence_of_element_located((By.ID, 'username'))).send_keys('karfafton@gmail.com')
+wait.until(EC.presence_of_element_located((By.ID, 'username'))).send_keys('**********')
 time.sleep(1)
-wait.until(EC.presence_of_element_located((By.ID, 'password'))).send_keys('@Dummy123')
+wait.until(EC.presence_of_element_located((By.ID, 'password'))).send_keys('*********')
 time.sleep(1)
 wd.find_element(By.CLASS_NAME, 'login').click()
 time.sleep(2)
