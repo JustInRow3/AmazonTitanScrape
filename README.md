@@ -5,11 +5,13 @@ For the project to be done in selenium here are the steps:
 2. Write the script:
 2. Import essential tools in Python.
 2. Open a browser tab.
-2. Add extension and enable extension, then visit amazon.
-2. Open the keywork excel file.
+2. Add extension
+2. Login on extension 
+2. Visit Amazon.com
+2. Check for captcha, maximize window then refresh page if encountered. 
+2. Open the keyword excel file put into an array.
 2. Read the first keyword, then plug in to the amazon search bar.
-2. Hit enter, use seleinum to find table id of the extension.
-2. Get XPATH of each section of the header i.e Results
-2. Put data in an array or data frame.
+2. Hit enter, wait until the extension table of data is done loading.
+2. Put data in data frame.
 2. Loop steps e-h for every keyword, then write into a new excel file when done.
 2. Save.
