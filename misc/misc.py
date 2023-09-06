@@ -39,7 +39,7 @@ def if_number_(string):
 #print(if_number('0.0'))
 
 
-def iterate_keyword(file, wait, writer, wd):
+def iterate_keyword(file, wait, writer, wd, columns):
     from selenium.webdriver.common.by import By
     for_save = pd.DataFrame()
     wd.implicitly_wait(30)
@@ -78,6 +78,7 @@ def iterate_keyword(file, wait, writer, wd):
                     data.insert(0, keyword)
                     # Transpose first before append
                     for_transpose = pd.DataFrame(data, dtype=str).transpose()
+                    for_transpose.columns=columns
                     for_save = pd.concat([for_save, for_transpose], ignore_index=True)
                     print(for_save)
                     print('Write to dataframe.')

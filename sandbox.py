@@ -29,17 +29,20 @@ for_write = pd.concat([for_transpose2, for_transpose], ignore_index=True)
 print(misc.iterate_keyword(file))"""
 import openpyxl
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from webdriver_manager.chrome import ChromeDriverManager
 import time
 from selenium.webdriver.chrome.options import Options
 import sys
 sys.path.append("..")
 from misc import misc
+
+columns = ['Keyword', 'Total Results', 'On First Page', 'Ind. Published', 'Average_BSR',
+                                  'Low_BSR', 'High_BSR', 'Average_Reviews', 'Low_Reviews', 'High_Reviews',
+                                  'Average_Price', 'Low_Price', 'High_Price', 'Demand']
 
 #Constant filepath of input xlsx file
 filetorun = '9_2_2023'
@@ -59,7 +62,9 @@ options = Options()
 options.page_load_strategy = 'eager' # Webdriver waits until DOMContentLoaded event fire is returned.
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
 options.add_extension('extension_8_3_0_0.crx')
-service = Service(executable_path=r'C:\Users\jjie\.wdm\drivers\chromedriver\win64\116.0.5845.141\chromedriver-win32\chromedriver.exe')
+service = Service(executable_path=r'C:\Users\jjie\.wdm\drivers\chromedriver\win64\116.0.5845.180\chromedriver-win32\chromedriver.exe')
+#service=Service(ChromeDriverManager().install())
+
 # Open browser window
 wd = webdriver.Chrome(service=service, options=options)
 wd.implicitly_wait(10)
@@ -68,6 +73,7 @@ wd.implicitly_wait(10)
 wd.maximize_window()
 time.sleep(3)
 wd.get('https://www.amazon.com/') # open amazon
+time.sleep(3)
 print('Open tab')
 print('Maximize tab')
 
@@ -89,7 +95,8 @@ for i in range(6):
         options.page_load_strategy = 'eager'  # Webdriver waits until DOMContentLoaded event fire is returned.
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
         options.add_extension('extension_8_3_0_0.crx')
-        service = Service(executable_path=r'C:\Users\jjie\.wdm\drivers\chromedriver\win64\116.0.5845.141\chromedriver-win32\chromedriver.exe')
+        service = Service(executable_path=r'C:\Users\jjie\.wdm\drivers\chromedriver\win64\116.0.5845.180\chromedriver-win32\chromedriver.exe')
+        #service = Service(ChromeDriverManager().install())
         # Open browser window
         wd = webdriver.Chrome(service=service, options=options)
         wd.implicitly_wait(10)
@@ -98,7 +105,6 @@ for i in range(6):
         time.sleep(3)
         wd.maximize_window()
         wd.refresh()
-        time.sleep(3)
 
 original_window = wd.current_window_handle # store the ID of the original window
 wait = WebDriverWait(wd, 50) # setup wait
@@ -112,7 +118,9 @@ for tab in wd.window_handles:
 
 # Input username and pw then click login
 wait.until(EC.presence_of_element_located((By.ID, 'username'))).send_keys('karfafton@gmail.com')
+time.sleep(1)
 wait.until(EC.presence_of_element_located((By.ID, 'password'))).send_keys('@Dummy123')
+time.sleep(1)
 wd.find_element(By.CLASS_NAME, 'login').click()
 time.sleep(2)
 wd.close() # close tab
@@ -124,4 +132,6 @@ wd.refresh()
 print('Refresh page')
 time.sleep(2)
 
-misc.iterate_keyword(file=filetorun_excel, writer=write_excel_path, wait=wait, wd=wd)
+misc.iterate_keyword(file=filetorun_excel, writer=write_excel_path, wait=wait, wd=wd, columns=columns)
+
+wd.quit()
